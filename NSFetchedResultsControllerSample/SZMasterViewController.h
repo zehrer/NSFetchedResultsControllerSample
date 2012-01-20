@@ -10,9 +10,15 @@
 
 #import <CoreData/CoreData.h>
 
+@class Event;
+
 @interface SZMasterViewController : UITableViewController <NSFetchedResultsControllerDelegate>
 
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
 @property (strong, nonatomic) NSManagedObjectContext *managedObjectContext;
+
+@property (strong, nonatomic) Event *currentEvent;
+
+- (Event *)insertNewObject;
 
 @end

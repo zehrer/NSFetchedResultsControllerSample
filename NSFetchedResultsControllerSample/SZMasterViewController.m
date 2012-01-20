@@ -7,8 +7,9 @@
 //
 
 #import "SZMasterViewController.h"
+#import "Event.h"
 
-#import "SZDetailViewController.h"
+//#import "SZDetailViewController.h"
 
 @interface SZMasterViewController ()
 - (void)configureCell:(UITableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath;
@@ -18,6 +19,9 @@
 
 @synthesize fetchedResultsController = __fetchedResultsController;
 @synthesize managedObjectContext = __managedObjectContext;
+
+@synthesize currentEvent;
+
 
 - (void)awakeFromNib
 {
@@ -37,7 +41,7 @@
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
     // Set up the edit and add buttons.
-    self.navigationItem.leftBarButtonItem = self.editButtonItem;
+    //self.navigationItem.leftBarButtonItem = self.editButtonItem;
 
     UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(insertNewObject)];
     self.navigationItem.rightBarButtonItem = addButton;
@@ -138,8 +142,9 @@
 {
     if ([[segue identifier] isEqualToString:@"showDetail"]) {
         NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
-        NSManagedObject *selectedObject = [[self fetchedResultsController] objectAtIndexPath:indexPath];
-        [[segue destinationViewController] setDetailItem:selectedObject];
+        Event *selectedObject = [[self fetchedResultsController] objectAtIndexPath:indexPath];
+        [[segue destinationViewController] setManagedObjectContext:self.managedObjectContext];
+        [[segue destinationViewController] setCurrentEvent:selectedObject];
     }
 }
 
@@ -161,6 +166,9 @@
     // Set the batch size to a suitable number.
     [fetchRequest setFetchBatchSize:20];
     
+    
+    [fetchRequest setPredicate:[NSPredicate predicateWithFormat:@"self in %@.subItems",currentEvent]];
+    
     // Edit the sort key as appropriate.
     NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"timeStamp" ascending:NO];
     NSArray *sortDescriptors = [NSArray arrayWithObjects:sortDescriptor, nil];
@@ -169,7 +177,7 @@
     
     // Edit the section name key path and cache name if appropriate.
     // nil for section name key path means "no sections".
-    NSFetchedResultsController *aFetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest managedObjectContext:self.managedObjectContext sectionNameKeyPath:nil cacheName:@"Master"];
+    NSFetchedResultsController *aFetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest managedObjectContext:self.managedObjectContext sectionNameKeyPath:nil cacheName:nil];
     aFetchedResultsController.delegate = self;
     self.fetchedResultsController = aFetchedResultsController;
     
@@ -253,16 +261,21 @@
     cell.textLabel.text = [[managedObject valueForKey:@"timeStamp"] description];
 }
 
-- (void)insertNewObject
+- (Event *)insertNewObject
 {
     // Create a new instance of the entity managed by the fetched results controller.
     NSManagedObjectContext *context = [self.fetchedResultsController managedObjectContext];
     NSEntityDescription *entity = [[self.fetchedResultsController fetchRequest] entity];
-    NSManagedObject *newManagedObject = [NSEntityDescription insertNewObjectForEntityForName:[entity name] inManagedObjectContext:context];
+    Event *newManagedObject = [NSEntityDescription insertNewObjectForEntityForName:[entity name] inManagedObjectContext:context];
     
     // If appropriate, configure the new managed object.
     // Normally you should use accessor methods, but using KVC here avoids the need to add a custom class to the template.
     [newManagedObject setValue:[NSDate date] forKey:@"timeStamp"];
+    
+
+    if (currentEvent) {
+        [currentEvent addSubItemsObject:newManagedObject]; 
+    }
     
     // Save the context.
     NSError *error = nil;
@@ -275,6 +288,8 @@
         NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
         abort();
     }
+    
+    return newManagedObject;
 }
 
 @end
