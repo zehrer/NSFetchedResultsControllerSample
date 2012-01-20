@@ -6,6 +6,6 @@
         <relationship name="subItems" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Event" inverseName="parent" inverseEntity="Event" syncable="YES"/>
     </entity>
     <elements>
-        <element name="Event" positionX="261" positionY="189" width="128" height="90"/>
+        <element name="Event" positionX="261" positionY="189" width="128" height="60"/>
     </elements>
 </model>
