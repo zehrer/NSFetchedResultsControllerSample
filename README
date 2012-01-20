@@ -1,0 +1,14 @@
+NSFetchedResultsControllerSample is a iOS5 sample projct for the iPhone/iPod.
+
+It shows how to use the NSFetchedResultsController for CoreData to-many relationships.
+It is just based to the code created by the XCode 4.2.1 wizard. 
+
+The datamodel is only the Event class refer itself (subItems) by a to-many relationship.
+
+The advantage of using an NSFetchedResultsController for to-many relationship is you get the 
+monitoring for deletes or updates for free and have a implementation with animations and not just a
+simple view.reloadData version.
+
+All my code changes are licensed under the Apache License, Version 2.0 (the "License");
+Copyright (c) 2012 Stephan Zehrer
+http://www.apache.org/licenses/LICENSE-2.0
