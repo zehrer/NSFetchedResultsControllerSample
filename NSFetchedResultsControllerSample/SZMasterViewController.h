@@ -20,5 +20,6 @@
 @property (strong, nonatomic) Event *currentEvent;
 
 - (Event *)insertNewObject;
+- (void) saveManagedObjectContext;
 
 @end

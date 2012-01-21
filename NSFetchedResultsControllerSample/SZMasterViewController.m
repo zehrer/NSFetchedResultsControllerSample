@@ -118,17 +118,7 @@
         NSManagedObjectContext *context = [self.fetchedResultsController managedObjectContext];
         [context deleteObject:[self.fetchedResultsController objectAtIndexPath:indexPath]];
         
-        // Save the context.
-        NSError *error = nil;
-        if (![context save:&error]) {
-            /*
-             Replace this implementation with code to handle the error appropriately.
-             
-             abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development. 
-             */
-            NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
-            abort();
-        }
+        [self saveManagedObjectContext];
     }   
 }
 
@@ -277,9 +267,16 @@
         [currentEvent addSubItemsObject:newManagedObject]; 
     }
     
+    [self saveManagedObjectContext];
+    
+    return newManagedObject;
+}
+
+- (void) saveManagedObjectContext
+{
     // Save the context.
     NSError *error = nil;
-    if (![context save:&error]) {
+    if (![[self.fetchedResultsController managedObjectContext] save:&error]) {
         /*
          Replace this implementation with code to handle the error appropriately.
          
@@ -288,8 +285,6 @@
         NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
         abort();
     }
-    
-    return newManagedObject;
 }
 
 @end
