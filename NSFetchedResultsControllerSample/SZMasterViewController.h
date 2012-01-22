@@ -16,10 +16,12 @@
 
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
 @property (strong, nonatomic) NSManagedObjectContext *managedObjectContext;
+@property (readonly, strong, nonatomic) NSEntityDescription *entityDescription;
 
 @property (strong, nonatomic) Event *currentEvent;
 
 - (Event *)insertNewObject;
 - (void) saveManagedObjectContext;
+- (void) performFetch;
 
 @end

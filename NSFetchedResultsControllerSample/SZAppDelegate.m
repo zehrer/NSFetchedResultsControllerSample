@@ -24,7 +24,7 @@
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"parent == NULL"];
     
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-    fetchRequest.entity = entityDescription;
+    fetchRequest.entity =  entityDescription;
     fetchRequest.predicate = predicate;
     
     // TODO: better Error handling :)
@@ -41,14 +41,16 @@
     // Override point for customization after application launch.
     UINavigationController *navigationController = (UINavigationController *)self.window.rootViewController;
     SZMasterViewController *controller = (SZMasterViewController *)navigationController.topViewController;
+   
     controller.managedObjectContext = self.managedObjectContext;
     
     // get / generate root event (not visiable)
     
     controller.currentEvent = [self rootEvent];
     
-    if (controller.currentEvent == NULL)
+    if (controller.currentEvent == NULL) {
         controller.currentEvent = [controller insertNewObject];
+    }
     
     return YES;
 }
