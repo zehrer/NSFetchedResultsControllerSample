@@ -11,17 +11,16 @@
 #import <CoreData/CoreData.h>
 
 @class Event;
+@class SZDataSource;
 
 @interface SZMasterViewController : UITableViewController <NSFetchedResultsControllerDelegate>
 
-@property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
+
 @property (strong, nonatomic) NSManagedObjectContext *managedObjectContext;
-@property (readonly, strong, nonatomic) NSEntityDescription *entityDescription;
 
-@property (strong, nonatomic) Event *currentEvent;
+@property (readonly, strong, nonatomic) SZDataSource *dataSource;
 
-- (Event *)insertNewObject;
-- (void) saveManagedObjectContext;
-- (void) performFetch;
+
+
 
 @end

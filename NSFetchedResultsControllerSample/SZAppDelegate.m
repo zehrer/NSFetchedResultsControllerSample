@@ -10,6 +10,8 @@
 
 #import "SZMasterViewController.h"
 
+#import "SZDataSource.h"
+
 @implementation SZAppDelegate
 
 @synthesize window = _window;
@@ -17,24 +19,7 @@
 @synthesize managedObjectModel = __managedObjectModel;
 @synthesize persistentStoreCoordinator = __persistentStoreCoordinator;
 
--  (Event*)rootEvent 
-{
-    NSEntityDescription *entityDescription = [NSEntityDescription entityForName:@"Event" inManagedObjectContext:self.managedObjectContext];
-    
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"parent == NULL"];
-    
-    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-    fetchRequest.entity =  entityDescription;
-    fetchRequest.predicate = predicate;
-    
-    // TODO: better Error handling :)
-    NSArray *fetchResult = [self.managedObjectContext executeFetchRequest:fetchRequest error:nil];
-    
-    if (fetchResult.count > 0)
-        return [fetchResult lastObject];
-    else
-        return NULL;
-}
+
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
@@ -44,17 +29,15 @@
    
     controller.managedObjectContext = self.managedObjectContext;
     
-    // get / generate root event (not visiable)
-    
-    controller.currentEvent = [self rootEvent];
-    
-    if (controller.currentEvent == NULL) {
-        controller.currentEvent = [controller insertNewObject];
+    // fetch or insert root event
+    SZDataSource *dataSource = controller.dataSource;
+    dataSource.currentEvent = dataSource.rootEvent;
+    if (!dataSource.currentEvent) {
+        dataSource.currentEvent = dataSource.insertNewObject;
     }
-    
+        
     return YES;
 }
-
 
 
 - (void)applicationWillResignActive:(UIApplication *)application

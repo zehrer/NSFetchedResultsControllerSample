@@ -8,6 +8,7 @@
 
 #import "SZMasterViewController.h"
 #import "Event.h"
+#import "SZDataSource.h"
 
 //#import "SZDetailViewController.h"
 
@@ -17,12 +18,8 @@
 
 @implementation SZMasterViewController
 
-@synthesize fetchedResultsController = __fetchedResultsController;
 @synthesize managedObjectContext = __managedObjectContext;
-
-@synthesize entityDescription = __entityDescription;
-@synthesize currentEvent;
-
+@synthesize dataSource = __dataSource;;
 
 - (void)awakeFromNib
 {
@@ -84,12 +81,12 @@
 // Customize the number of sections in the table view.
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return [[self.fetchedResultsController sections] count];
+    return [[self.dataSource.fetchedResultsController sections] count];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    id <NSFetchedResultsSectionInfo> sectionInfo = [[self.fetchedResultsController sections] objectAtIndex:section];
+    id <NSFetchedResultsSectionInfo> sectionInfo = [[self.dataSource.fetchedResultsController sections] objectAtIndex:section];
     return [sectionInfo numberOfObjects];
 }
 
@@ -114,12 +111,14 @@
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    
+    // TEST
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         // Delete the managed object for the given index path
-        NSManagedObjectContext *context = [self.fetchedResultsController managedObjectContext];
-        [context deleteObject:[self.fetchedResultsController objectAtIndexPath:indexPath]];
+        NSManagedObjectContext *context = [self.dataSource.fetchedResultsController managedObjectContext];
+        [context deleteObject:[self.dataSource.fetchedResultsController objectAtIndexPath:indexPath]];
         
-        [self saveManagedObjectContext];
+        [self.dataSource saveManagedObjectContext];
     }   
 }
 
@@ -133,75 +132,28 @@
 {
     if ([[segue identifier] isEqualToString:@"showDetail"]) {
         NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
-        Event *selectedObject = [[self fetchedResultsController] objectAtIndexPath:indexPath];
-        [[segue destinationViewController] setManagedObjectContext:self.managedObjectContext];
-        [[segue destinationViewController] setCurrentEvent:selectedObject];
+        Event *selectedObject = [[self.dataSource fetchedResultsController] objectAtIndexPath:indexPath];
+        
+        SZMasterViewController *nextController = [segue destinationViewController];
+        [nextController setManagedObjectContext:self.managedObjectContext];
+        [[nextController dataSource] setCurrentEvent:selectedObject];
     }
 }
 
 #pragma mark - Fetched results controller
 
-- (void) performFetch
-{
-    NSError *error = nil;
-	if (![self.fetchedResultsController performFetch:&error]) {
-	    /*
-	     Replace this implementation with code to handle the error appropriately.
-         
-	     abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development. 
-	     */
-	    NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
-	    abort();
-	}
-}
 
--  (NSEntityDescription *) entityDescription
-{
-    if (__entityDescription != nil) {
-        return __entityDescription;
-    }
-    __entityDescription = [NSEntityDescription entityForName:@"Event" inManagedObjectContext:self.managedObjectContext];
-    
-    return __entityDescription;
-}
-    
 
-- (NSFetchedResultsController *)fetchedResultsController
+- (SZDataSource *) dataSource
 {
-    if (__fetchedResultsController != nil) {
-        return __fetchedResultsController;
+    if (__dataSource != nil) {
+        return __dataSource;
     }
     
-    // Set up the fetched results controller.
-    // Create the fetch request for the entity.
-    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-    // Edit the entity name as appropriate.
-
-    [fetchRequest setEntity:self.entityDescription];
+    __dataSource = [[SZDataSource alloc] initWithDelegate:self andManagedObjectContext:self.managedObjectContext];
     
-    // Set the batch size to a suitable number.
-    [fetchRequest setFetchBatchSize:20];
-    
-    //[fetchRequest setPredicate:[NSPredicate predicateWithFormat:@"self in %@",currentEvent.subItems]];
-    [fetchRequest setPredicate:[NSPredicate predicateWithFormat:@"self in %@.subItems",currentEvent]];
-    
-    // Edit the sort key as appropriate.
-    NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"timeStamp" ascending:NO];
-    NSArray *sortDescriptors = [NSArray arrayWithObjects:sortDescriptor, nil];
-    
-    [fetchRequest setSortDescriptors:sortDescriptors];
-    
-    // Edit the section name key path and cache name if appropriate.
-    // nil for section name key path means "no sections".
-    NSFetchedResultsController *aFetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest managedObjectContext:self.managedObjectContext sectionNameKeyPath:nil cacheName:nil];
-    aFetchedResultsController.delegate = self;
-    self.fetchedResultsController = aFetchedResultsController;
-    
-    [self performFetch];
-    
-    return __fetchedResultsController;
-}    
-
+     return __dataSource;
+}
 
 
 - (void)controllerWillChangeContent:(NSFetchedResultsController *)controller
@@ -266,45 +218,15 @@
 
 - (void)configureCell:(UITableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath
 {
-    NSManagedObject *managedObject = [self.fetchedResultsController objectAtIndexPath:indexPath];
+    NSManagedObject *managedObject = [self.dataSource.fetchedResultsController objectAtIndexPath:indexPath];
     cell.textLabel.text = [[managedObject valueForKey:@"timeStamp"] description];
 }
 
-- (Event *)insertNewObject
-{
-    // Create a new instance of the entity managed by the fetched results controller.
-    //NSManagedObjectContext *context = [self.fetchedResultsController managedObjectContext];
-    //NSEntityDescription *entity = [[self.fetchedResultsController fetchRequest] entity];
-    
-    Event *newManagedObject = [NSEntityDescription insertNewObjectForEntityForName:[self.entityDescription name] inManagedObjectContext:self.managedObjectContext];
-    
-    // If appropriate, configure the new managed object.
-    // Normally you should use accessor methods, but using KVC here avoids the need to add a custom class to the template.
-    [newManagedObject setValue:[NSDate date] forKey:@"timeStamp"];
-    
 
-    if (currentEvent) {
-        [currentEvent addSubItemsObject:newManagedObject]; 
-    }
-    
-    [self saveManagedObjectContext];
-    
-    return newManagedObject;
-}
-
-- (void) saveManagedObjectContext
+// for the add button
+- (void) insertNewObject
 {
-    // Save the context.
-    NSError *error = nil;
-    if (![self.managedObjectContext save:&error]) {
-        /*
-         Replace this implementation with code to handle the error appropriately.
-         
-         abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development. 
-         */
-        NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
-        abort();
-    }
+    [self.dataSource insertNewObject];
 }
 
 @end
