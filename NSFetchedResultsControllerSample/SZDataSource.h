@@ -25,9 +25,15 @@
 - (void) saveManagedObjectContext;
 
 - (Event*)rootEvent;
+
+
 - (Event*)insertNewObject;
+- (id)objectAtIndexPath:(NSIndexPath *)indexPath;
+- (void) deleteObjectAtIndexPath:(NSIndexPath*)indexPath;
 
 - (void) performFetch;
+
+
 
 
 @end

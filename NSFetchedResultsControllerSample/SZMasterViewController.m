@@ -115,8 +115,7 @@
     // TEST
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         // Delete the managed object for the given index path
-        NSManagedObjectContext *context = [self.dataSource.fetchedResultsController managedObjectContext];
-        [context deleteObject:[self.dataSource.fetchedResultsController objectAtIndexPath:indexPath]];
+        [self.dataSource deleteObjectAtIndexPath:indexPath];
         
         [self.dataSource saveManagedObjectContext];
     }   

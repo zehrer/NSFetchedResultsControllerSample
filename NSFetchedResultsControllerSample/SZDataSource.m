@@ -66,15 +66,11 @@
 - (Event *)insertNewObject
 {
     // Create a new instance of the entity managed by the fetched results controller.
-    //NSManagedObjectContext *context = [self.fetchedResultsController managedObjectContext];
-    //NSEntityDescription *entity = [[self.fetchedResultsController fetchRequest] entity];
-    
     Event *newManagedObject = [NSEntityDescription insertNewObjectForEntityForName:[self.entityDescription name] inManagedObjectContext:self.managedObjectContext];
     
     // If appropriate, configure the new managed object.
     // Normally you should use accessor methods, but using KVC here avoids the need to add a custom class to the template.
     [newManagedObject setValue:[NSDate date] forKey:@"timeStamp"];
-    
     
     if (self.currentEvent) {
         [self.currentEvent addSubItemsObject:newManagedObject]; 
@@ -83,6 +79,17 @@
     [self saveManagedObjectContext];
     
     return newManagedObject;
+}
+
+
+- (id)objectAtIndexPath:(NSIndexPath *)indexPath
+{
+    return [self.fetchedResultsController objectAtIndexPath:indexPath];
+}
+
+- (void) deleteObjectAtIndexPath:(NSIndexPath*)indexPath
+{
+    [self.managedObjectContext deleteObject:[self objectAtIndexPath:indexPath]];
 }
 
 #pragma mark Save
@@ -98,7 +105,7 @@
          abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development. 
          */
         NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
-        abort();
+        //abort();
     }
 }
 
@@ -114,7 +121,7 @@
 	     abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development. 
 	     */
 	    NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
-	    abort();
+	    //abort();
 	}
 }
 
