@@ -44,54 +44,6 @@
 }
 
 
--  (Event*)rootEvent 
-{
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"parent == NULL"];
-    
-    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-    fetchRequest.entity =  self.entityDescription;
-    fetchRequest.predicate = predicate;
-    
-    // TODO: better Error handling :)
-    NSArray *fetchResult = [self.managedObjectContext executeFetchRequest:fetchRequest error:nil];
-    
-    if (fetchResult.count > 0)
-        return [fetchResult lastObject];
-    else
-        return NULL;
-}
-
-#pragma mark Insert
-
-- (Event *)insertNewObject
-{
-    // Create a new instance of the entity managed by the fetched results controller.
-    Event *newManagedObject = [NSEntityDescription insertNewObjectForEntityForName:[self.entityDescription name] inManagedObjectContext:self.managedObjectContext];
-    
-    // If appropriate, configure the new managed object.
-    // Normally you should use accessor methods, but using KVC here avoids the need to add a custom class to the template.
-    [newManagedObject setValue:[NSDate date] forKey:@"timeStamp"];
-    
-    if (self.currentEvent) {
-        [self.currentEvent addSubItemsObject:newManagedObject]; 
-    }
-    
-    [self saveManagedObjectContext];
-    
-    return newManagedObject;
-}
-
-
-- (id)objectAtIndexPath:(NSIndexPath *)indexPath
-{
-    return [self.fetchedResultsController objectAtIndexPath:indexPath];
-}
-
-- (void) deleteObjectAtIndexPath:(NSIndexPath*)indexPath
-{
-    [self.managedObjectContext deleteObject:[self objectAtIndexPath:indexPath]];
-}
-
 #pragma mark Save
 
 - (void) saveManagedObjectContext
@@ -126,6 +78,19 @@
 }
 
 
+- (NSPredicate *) fetchPredicate
+{
+    //[fetchRequest setPredicate:[NSPredicate predicateWithFormat:@"self in %@",currentEvent.subItems]];
+    return [NSPredicate predicateWithFormat:@"self in %@.subItems",self.currentEvent];
+}
+
+- (NSArray *) sortDescriptors
+{
+    NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"timeStamp" ascending:NO];
+    
+    return [NSArray arrayWithObjects:sortDescriptor, nil];
+}
+
 
 - (NSFetchedResultsController *)fetchedResultsController
 {
@@ -143,14 +108,11 @@
     // Set the batch size to a suitable number.
     [fetchRequest setFetchBatchSize:20];
     
-    //[fetchRequest setPredicate:[NSPredicate predicateWithFormat:@"self in %@",currentEvent.subItems]];
-    [fetchRequest setPredicate:[NSPredicate predicateWithFormat:@"self in %@.subItems",self.currentEvent]];
+    // Fetch Predicate
+    [fetchRequest setPredicate:[self fetchPredicate]];
     
-    // Edit the sort key as appropriate.
-    NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"timeStamp" ascending:NO];
-    NSArray *sortDescriptors = [NSArray arrayWithObjects:sortDescriptor, nil];
-    
-    [fetchRequest setSortDescriptors:sortDescriptors];
+    // Sort
+    [fetchRequest setSortDescriptors:[self sortDescriptors]];
     
     // Edit the section name key path and cache name if appropriate.
     // nil for section name key path means "no sections".
@@ -160,7 +122,79 @@
     
     [self performFetch];
     
+    NSLog(@"Num: %i",self.currentEvent.subItems.count);
+    NSLog(@"ID: %@",self.currentEvent.objectID);
+    
     return __fetchedResultsController;
 } 
+
+#pragma mark Interface Data Source
+
+- (NSInteger)numberOfSections
+{
+    return [[self.fetchedResultsController sections] count];    
+}
+
+- (NSInteger)numberOfRowsInSection:(NSInteger)section
+{
+    id <NSFetchedResultsSectionInfo> sectionInfo = [[self.fetchedResultsController sections] objectAtIndex:section];
+    return [sectionInfo numberOfObjects];
+}
+
+- (id)objectAtIndexPath:(NSIndexPath *)indexPath {
+    
+    return [self.fetchedResultsController objectAtIndexPath:indexPath]; 
+}
+
+- (void) deleteObjectAtIndexPath:(NSIndexPath*)indexPath
+{
+    Event *event = self.currentEvent;
+    
+    //[event removeSubItemsObject:[self objectAtIndexPath:indexPath]];
+    [self.managedObjectContext deleteObject:[self objectAtIndexPath:indexPath]];
+    
+    NSLog(@"Num: %i",event.subItems.count);
+    NSLog(@"ID: %@",self.currentEvent.objectID);
+    
+}
+
+#pragma mark Insert
+
+- (Event *)insertNewObject
+{
+    // Create a new instance of the entity managed by the fetched results controller.
+    Event *newManagedObject = [NSEntityDescription insertNewObjectForEntityForName:[self.entityDescription name] inManagedObjectContext:self.managedObjectContext];
+    
+    // If appropriate, configure the new managed object.
+    // Normally you should use accessor methods, but using KVC here avoids the need to add a custom class to the template.
+    [newManagedObject setValue:[NSDate date] forKey:@"timeStamp"];
+    
+    [self saveManagedObjectContext];
+    
+    if (self.currentEvent) {
+        [self.currentEvent addSubItemsObject:newManagedObject]; 
+    }
+    
+    [self saveManagedObjectContext];
+    
+    return newManagedObject;
+}
+
+-  (Event*)rootEvent 
+{
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"parent == NULL"];
+    
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+    fetchRequest.entity =  self.entityDescription;
+    fetchRequest.predicate = predicate;
+    
+    // TODO: better Error handling :)
+    NSArray *fetchResult = [self.managedObjectContext executeFetchRequest:fetchRequest error:nil];
+    
+    if (fetchResult.count > 0)
+        return [fetchResult lastObject];
+    else
+        return NULL;
+}
 
 @end
