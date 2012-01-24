@@ -122,9 +122,6 @@
     
     [self performFetch];
     
-    NSLog(@"Num: %i",self.currentEvent.subItems.count);
-    NSLog(@"ID: %@",self.currentEvent.objectID);
-    
     return __fetchedResultsController;
 } 
 
@@ -148,14 +145,8 @@
 
 - (void) deleteObjectAtIndexPath:(NSIndexPath*)indexPath
 {
-    Event *event = self.currentEvent;
-    
     //[event removeSubItemsObject:[self objectAtIndexPath:indexPath]];
     [self.managedObjectContext deleteObject:[self objectAtIndexPath:indexPath]];
-    
-    NSLog(@"Num: %i",event.subItems.count);
-    NSLog(@"ID: %@",self.currentEvent.objectID);
-    
 }
 
 #pragma mark Insert
