@@ -9,10 +9,11 @@
 #import <Foundation/Foundation.h>
 
 @class Event;
+@class SZDataStore;
 
 @interface SZDataSource : NSObject
 
-@property (strong, nonatomic) NSManagedObjectContext *managedObjectContext;
+@property (weak, nonatomic) SZDataStore *dataStore;
 @property (readonly, strong, nonatomic) NSEntityDescription *entityDescription;
 
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
@@ -20,15 +21,16 @@
 
 @property (strong, nonatomic) Event *currentEvent;
 
-- (id) initWithDelegate:(id<NSFetchedResultsControllerDelegate>) aFetchedResultsControllerDelegate andManagedObjectContext:(NSManagedObjectContext *) aManagedObjectContext;
-
-- (void) saveManagedObjectContext;
+- (id) initWithDelegate:(id<NSFetchedResultsControllerDelegate>) aFetchedResultsControllerDelegate andDataStore:(SZDataStore *) aManagedObjectContext;
 
 - (Event*)rootEvent;
 
 
 - (Event*)insertNewObject;
 - (id)objectAtIndexPath:(NSIndexPath *)indexPath;
+
+- (void)moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath;
+
 - (void) deleteObjectAtIndexPath:(NSIndexPath*)indexPath;
 
 - (void) performFetch;

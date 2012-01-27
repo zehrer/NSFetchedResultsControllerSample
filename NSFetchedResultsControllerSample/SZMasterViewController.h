@@ -11,6 +11,7 @@
 #import <CoreData/CoreData.h>
 
 @class Event;
+@class SZDataStore;
 @class SZDataSource;
 
 @interface SZMasterViewController : UITableViewController <NSFetchedResultsControllerDelegate>
@@ -18,9 +19,10 @@
 
 @property (strong, nonatomic) NSManagedObjectContext *managedObjectContext;
 
+@property (weak, nonatomic) SZDataStore *dataStore;
 @property (readonly, strong, nonatomic) SZDataSource *dataSource;
 
 
-
+- (void) configureControllerWithDataStore:(SZDataStore *)dataStore;
 
 @end

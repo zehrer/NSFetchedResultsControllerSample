@@ -9,6 +9,7 @@
 #import "SZMasterViewController.h"
 #import "Event.h"
 #import "SZDataSource.h"
+#import "SZDataStore.h"
 
 //#import "SZDetailViewController.h"
 
@@ -19,7 +20,9 @@
 @implementation SZMasterViewController
 
 @synthesize managedObjectContext = __managedObjectContext;
-@synthesize dataSource = __dataSource;;
+@synthesize dataStore = __dataStore;
+@synthesize dataSource = __dataSource;
+
 
 - (void)awakeFromNib
 {
@@ -34,12 +37,18 @@
 
 #pragma mark - View lifecycle
 
+- (void) configureControllerWithDataStore:(SZDataStore *)aDataStore
+{
+    self.dataStore = aDataStore;
+}
+
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
     // Set up the edit and add buttons.
-    //self.navigationItem.leftBarButtonItem = self.editButtonItem;
+    self.navigationItem.leftBarButtonItem = self.editButtonItem;
 
     UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(insertNewObject)];
     self.navigationItem.rightBarButtonItem = addButton;
@@ -117,15 +126,15 @@
         // Delete the managed object for the given index path
         [self.dataSource deleteObjectAtIndexPath:indexPath];
         
-        [self.dataSource saveManagedObjectContext];
+        [self.dataStore saveObjectContext];
     }   
 }
 
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
+- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
 {
-    // The table view should not be re-orderable.
-    return NO;
+    [self.dataSource moveRowAtIndexPath:fromIndexPath toIndexPath:toIndexPath];
 }
+
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
@@ -134,7 +143,7 @@
         Event *selectedObject = [[self.dataSource fetchedResultsController] objectAtIndexPath:indexPath];
         
         SZMasterViewController *nextController = [segue destinationViewController];
-        [nextController setManagedObjectContext:self.managedObjectContext];
+        [nextController configureControllerWithDataStore:self.dataStore];
         [[nextController dataSource] setCurrentEvent:selectedObject];
     }
 }
@@ -149,7 +158,7 @@
         return __dataSource;
     }
     
-    __dataSource = [[SZDataSource alloc] initWithDelegate:self andManagedObjectContext:self.managedObjectContext];
+    __dataSource = [[SZDataSource alloc] initWithDelegate:self andDataStore:self.dataStore];
     
      return __dataSource;
 }

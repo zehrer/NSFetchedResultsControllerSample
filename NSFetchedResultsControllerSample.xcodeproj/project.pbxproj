@@ -7,7 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		AA0063D514C8C928009FA10C /* Event.m in Sources */ = {isa = PBXBuildFile; fileRef = AA0063D414C8C928009FA10C /* Event.m */; };
+		AA12BD6C14D1F4D300B2FAB7 /* Event.m in Sources */ = {isa = PBXBuildFile; fileRef = AA12BD6B14D1F4D300B2FAB7 /* Event.m */; };
+		AA12BD6F14D280B500B2FAB7 /* README in Resources */ = {isa = PBXBuildFile; fileRef = AA12BD6E14D280B500B2FAB7 /* README */; };
 		AA7BF89614CC8837002D2B92 /* SZDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = AA7BF89514CC8837002D2B92 /* SZDataSource.m */; };
 		AAB9896914C8802100770F1C /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AAB9896814C8802100770F1C /* UIKit.framework */; };
 		AAB9896B14C8802100770F1C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AAB9896A14C8802100770F1C /* Foundation.framework */; };
@@ -19,11 +20,13 @@
 		AAB9897E14C8802200770F1C /* MainStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AAB9897C14C8802200770F1C /* MainStoryboard.storyboard */; };
 		AAB9898114C8802200770F1C /* NSFetchedResultsControllerSample.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = AAB9897F14C8802200770F1C /* NSFetchedResultsControllerSample.xcdatamodeld */; };
 		AAB9898414C8802200770F1C /* SZMasterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AAB9898314C8802200770F1C /* SZMasterViewController.m */; };
+		AACE9DB314CF4AE80094BFA5 /* SZDataStore.m in Sources */ = {isa = PBXBuildFile; fileRef = AACE9DB214CF4AE80094BFA5 /* SZDataStore.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		AA0063D314C8C928009FA10C /* Event.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Event.h; sourceTree = "<group>"; };
-		AA0063D414C8C928009FA10C /* Event.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Event.m; sourceTree = "<group>"; };
+		AA12BD6A14D1F4D300B2FAB7 /* Event.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Event.h; sourceTree = "<group>"; };
+		AA12BD6B14D1F4D300B2FAB7 /* Event.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Event.m; sourceTree = "<group>"; };
+		AA12BD6E14D280B500B2FAB7 /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
 		AA7BF89414CC8837002D2B92 /* SZDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SZDataSource.h; sourceTree = "<group>"; };
 		AA7BF89514CC8837002D2B92 /* SZDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SZDataSource.m; sourceTree = "<group>"; };
 		AAB9896414C8802100770F1C /* NSFetchedResultsControllerSample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NSFetchedResultsControllerSample.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -41,6 +44,8 @@
 		AAB9898014C8802200770F1C /* NSFetchedResultsControllerSample.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = NSFetchedResultsControllerSample.xcdatamodel; sourceTree = "<group>"; };
 		AAB9898214C8802200770F1C /* SZMasterViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SZMasterViewController.h; sourceTree = "<group>"; };
 		AAB9898314C8802200770F1C /* SZMasterViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SZMasterViewController.m; sourceTree = "<group>"; };
+		AACE9DB114CF4AE80094BFA5 /* SZDataStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SZDataStore.h; sourceTree = "<group>"; };
+		AACE9DB214CF4AE80094BFA5 /* SZDataStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SZDataStore.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,6 +66,7 @@
 		AAB9895914C8802100770F1C = {
 			isa = PBXGroup;
 			children = (
+				AA12BD6E14D280B500B2FAB7 /* README */,
 				AAB9897014C8802100770F1C /* NSFetchedResultsControllerSample */,
 				AAB9896714C8802100770F1C /* Frameworks */,
 				AAB9896514C8802100770F1C /* Products */,
@@ -94,11 +100,7 @@
 				AAB9897C14C8802200770F1C /* MainStoryboard.storyboard */,
 				AAB9898214C8802200770F1C /* SZMasterViewController.h */,
 				AAB9898314C8802200770F1C /* SZMasterViewController.m */,
-				AA7BF89414CC8837002D2B92 /* SZDataSource.h */,
-				AA7BF89514CC8837002D2B92 /* SZDataSource.m */,
-				AAB9897F14C8802200770F1C /* NSFetchedResultsControllerSample.xcdatamodeld */,
-				AA0063D314C8C928009FA10C /* Event.h */,
-				AA0063D414C8C928009FA10C /* Event.m */,
+				AACE9DAF14CF4AB10094BFA5 /* CoreData */,
 				AAB9897114C8802200770F1C /* Supporting Files */,
 			);
 			path = NSFetchedResultsControllerSample;
@@ -113,6 +115,20 @@
 				AAB9897814C8802200770F1C /* NSFetchedResultsControllerSample-Prefix.pch */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		AACE9DAF14CF4AB10094BFA5 /* CoreData */ = {
+			isa = PBXGroup;
+			children = (
+				AA12BD6A14D1F4D300B2FAB7 /* Event.h */,
+				AA12BD6B14D1F4D300B2FAB7 /* Event.m */,
+				AAB9897F14C8802200770F1C /* NSFetchedResultsControllerSample.xcdatamodeld */,
+				AA7BF89414CC8837002D2B92 /* SZDataSource.h */,
+				AA7BF89514CC8837002D2B92 /* SZDataSource.m */,
+				AACE9DB114CF4AE80094BFA5 /* SZDataStore.h */,
+				AACE9DB214CF4AE80094BFA5 /* SZDataStore.m */,
+			);
+			name = CoreData;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -167,6 +183,7 @@
 			files = (
 				AAB9897514C8802200770F1C /* InfoPlist.strings in Resources */,
 				AAB9897E14C8802200770F1C /* MainStoryboard.storyboard in Resources */,
+				AA12BD6F14D280B500B2FAB7 /* README in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -181,8 +198,9 @@
 				AAB9897B14C8802200770F1C /* SZAppDelegate.m in Sources */,
 				AAB9898114C8802200770F1C /* NSFetchedResultsControllerSample.xcdatamodeld in Sources */,
 				AAB9898414C8802200770F1C /* SZMasterViewController.m in Sources */,
-				AA0063D514C8C928009FA10C /* Event.m in Sources */,
 				AA7BF89614CC8837002D2B92 /* SZDataSource.m in Sources */,
+				AACE9DB314CF4AE80094BFA5 /* SZDataStore.m in Sources */,
+				AA12BD6C14D1F4D300B2FAB7 /* Event.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -2,7 +2,7 @@
 //  Event.m
 //  NSFetchedResultsControllerSample
 //
-//  Created by Stephan Zehrer on 19.01.12.
+//  Created by Stephan Zehrer on 26.01.12.
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
 
@@ -12,8 +12,10 @@
 
 @implementation Event
 
+@dynamic name;
 @dynamic timeStamp;
-@dynamic subItems;
+@dynamic num;
 @dynamic parent;
+@dynamic subItems;
 
 @end

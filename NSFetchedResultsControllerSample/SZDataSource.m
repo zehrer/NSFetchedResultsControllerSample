@@ -7,11 +7,12 @@
 //
 
 #import "SZDataSource.h"
+#import "SZDataStore.h"
 #import "Event.h"
 
 @implementation SZDataSource
 
-@synthesize managedObjectContext = __managedObjectContext;
+@synthesize dataStore = __dataStore;
 @synthesize entityDescription = __entityDescription;
 @synthesize fetchedResultsController = __fetchedResultsController;
 
@@ -21,11 +22,11 @@
 
 #pragma mark - Init
 
-- (id) initWithDelegate:(id<NSFetchedResultsControllerDelegate>) aFetchedResultsControllerDelegate andManagedObjectContext:(NSManagedObjectContext *) aManagedObjectContext
+- (id) initWithDelegate:(id<NSFetchedResultsControllerDelegate>) aFetchedResultsControllerDelegate andDataStore:(SZDataStore *) aDataStore
 {
     self = [super init];
     if (self) {
-        self.managedObjectContext = aManagedObjectContext;
+        self.dataStore = aDataStore;
         self.fetchedResultsControllerDelegate = aFetchedResultsControllerDelegate;
     }
     return self;    
@@ -38,28 +39,12 @@
     if (__entityDescription != nil) {
         return __entityDescription;
     }
-    __entityDescription = [NSEntityDescription entityForName:@"Event" inManagedObjectContext:self.managedObjectContext];
+    __entityDescription = [self.dataStore entityDescriptionForName:@"Event"];
     
     return __entityDescription;
 }
 
 
-#pragma mark Save
-
-- (void) saveManagedObjectContext
-{
-    // Save the context.
-    NSError *error = nil;
-    if (![self.managedObjectContext save:&error]) {
-        /*
-         Replace this implementation with code to handle the error appropriately.
-         
-         abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development. 
-         */
-        NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
-        //abort();
-    }
-}
 
 #pragma mark - Fetched results controller
 
@@ -86,7 +71,7 @@
 
 - (NSArray *) sortDescriptors
 {
-    NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"timeStamp" ascending:NO];
+    NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"num" ascending:NO];
     
     return [NSArray arrayWithObjects:sortDescriptor, nil];
 }
@@ -116,11 +101,21 @@
     
     // Edit the section name key path and cache name if appropriate.
     // nil for section name key path means "no sections".
-    NSFetchedResultsController *aFetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest managedObjectContext:self.managedObjectContext sectionNameKeyPath:nil cacheName:nil];
+    
+    NSManagedObjectContext *context = self.dataStore.managedObjectContext;
+    
+    NSFetchedResultsController *aFetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
     aFetchedResultsController.delegate = self.fetchedResultsControllerDelegate;
     self.fetchedResultsController = aFetchedResultsController;
     
     [self performFetch];
+
+    // log ordered relationship
+    NSUInteger index = 0;
+    for (Event *element in self.currentEvent.subItems) {
+        NSLog(@"Event %u: %@",index, element.timeStamp.description);
+        index++;
+    }
     
     return __fetchedResultsController;
 } 
@@ -143,10 +138,34 @@
     return [self.fetchedResultsController objectAtIndexPath:indexPath]; 
 }
 
+- (void)moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
+{
+    
+    NSMutableOrderedSet* orderedSet = [self.currentEvent mutableOrderedSetValueForKey:@"subItems"];
+    
+    NSInteger fromIndex = fromIndexPath.row;
+    NSInteger toIndex = toIndexPath.row;
+
+    // see  http://www.wannabegeek.com/?p=74
+    NSIndexSet *indexes = [NSIndexSet indexSetWithIndex:fromIndex];
+    
+    if (fromIndex > toIndex) {
+		// we're moving up
+		[orderedSet moveObjectsAtIndexes:indexes toIndex:toIndex];
+	} else {
+		// we're moving down
+		[orderedSet moveObjectsAtIndexes:indexes toIndex:toIndex-[indexes count]];
+	}
+    
+    [self.dataStore saveObjectContext];
+}
+
+
+
 - (void) deleteObjectAtIndexPath:(NSIndexPath*)indexPath
 {
     //[event removeSubItemsObject:[self objectAtIndexPath:indexPath]];
-    [self.managedObjectContext deleteObject:[self objectAtIndexPath:indexPath]];
+    [self.dataStore.managedObjectContext deleteObject:[self objectAtIndexPath:indexPath]];
 }
 
 #pragma mark Insert
@@ -154,19 +173,25 @@
 - (Event *)insertNewObject
 {
     // Create a new instance of the entity managed by the fetched results controller.
-    Event *newManagedObject = [NSEntityDescription insertNewObjectForEntityForName:[self.entityDescription name] inManagedObjectContext:self.managedObjectContext];
+    Event *newManagedObject = [self.dataStore insertNewObjectForEntityForName:[self.entityDescription name]];
     
     // If appropriate, configure the new managed object.
     // Normally you should use accessor methods, but using KVC here avoids the need to add a custom class to the template.
     [newManagedObject setValue:[NSDate date] forKey:@"timeStamp"];
+    [newManagedObject setName:@"a"];
     
-    [self saveManagedObjectContext];
+    [self.dataStore saveObjectContext];
+    
     
     if (self.currentEvent) {
-        [self.currentEvent addSubItemsObject:newManagedObject]; 
+        
+        // BUG: see http://stackoverflow.com/questions/7385439/problems-with-nsorderedset
+        
+        NSMutableOrderedSet* tempSet = [self.currentEvent mutableOrderedSetValueForKey:@"subItems"];
+        [tempSet addObject:newManagedObject];
     }
     
-    [self saveManagedObjectContext];
+    [self.dataStore saveObjectContext];
     
     return newManagedObject;
 }
@@ -180,7 +205,7 @@
     fetchRequest.predicate = predicate;
     
     // TODO: better Error handling :)
-    NSArray *fetchResult = [self.managedObjectContext executeFetchRequest:fetchRequest error:nil];
+    NSArray *fetchResult = [self.dataStore.managedObjectContext executeFetchRequest:fetchRequest error:nil];
     
     if (fetchResult.count > 0)
         return [fetchResult lastObject];

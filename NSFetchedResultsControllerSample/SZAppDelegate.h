@@ -7,16 +7,17 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "SZDataStore.h"
 
-@interface SZAppDelegate : UIResponder <UIApplicationDelegate>
+@interface SZAppDelegate : UIResponder <UIApplicationDelegate, SZDataStoreAppDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
 
-@property (readonly, strong, nonatomic) NSManagedObjectContext *managedObjectContext;
-@property (readonly, strong, nonatomic) NSManagedObjectModel *managedObjectModel;
-@property (readonly, strong, nonatomic) NSPersistentStoreCoordinator *persistentStoreCoordinator;
+@property (readonly, strong, nonatomic) SZDataStore *dataStore;
 
-- (void)saveContext;
+@property (readonly, strong, nonatomic) NSString *dataStoreFileName;
+@property (readonly, strong, nonatomic) NSString *dataStoreModelName;
+
 - (NSURL *)applicationDocumentsDirectory;
 
 @end
