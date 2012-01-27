@@ -1,4 +1,5 @@
 NSFetchedResultsControllerSample is a iOS5 sample projct for the iPhone/iPod.
+The sample uses Automatic Reference Counting (ARC).
 
 It shows how to use the NSFetchedResultsController for CoreData to-many relationships.
 It is just based to the code created by the XCode 4.2.1 wizard. 
