@@ -37,11 +37,11 @@
 
 #pragma mark - View lifecycle
 
+
 - (void) configureControllerWithDataStore:(SZDataStore *)aDataStore
 {
     self.dataStore = aDataStore;
 }
-
 
 - (void)viewDidLoad
 {

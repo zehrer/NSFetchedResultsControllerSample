@@ -98,7 +98,6 @@
     return @"NSFetchedResultsControllerSample";
 }
 
-
 #pragma mark - Application's Documents directory
 
 /**
